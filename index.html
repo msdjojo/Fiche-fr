@@ -14,12 +14,12 @@
         .flip-card { perspective: 1200px; }
         .flip-inner { transition: transform 0.6s; transform-style: preserve-3d; }
         .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
-        .flip-front, .flip-back { backface-visibility: hidden; position: absolute; inset: 0; overflow-y: auto; }
+        .flip-front, .flip-back { backface-visibility: hidden; position: absolute; inset: 0; }
         .flip-back { transform: rotateY(180deg); }
-        /* Style personnalisé pour la scrollbar du verso */
-        .flip-back::-webkit-scrollbar { width: 6px; }
-        .flip-back::-webkit-scrollbar-track { background: #1e293b; }
-        .flip-back::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .scroll-container { overflow-y: auto; height: 100%; max-height: 520px; padding-right: 8px; }
+        .scroll-container::-webkit-scrollbar { width: 6px; }
+        .scroll-container::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+        .scroll-container::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
     </style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
   <script src="/_sdk/resizing_sdk.js" type="text/javascript"></script>
@@ -27,37 +27,42 @@
  <body data-template-id="__page-root" class="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-900 text-white">
   
   <header class="w-full max-w-4xl mb-4 text-center">
-   <h1 data-template-id="main-title" class="canva-text heading-font text-3xl mb-1 text-amber-400">Analyses Linéaires</h1>
-   <p data-template-id="subtitle" class="canva-text opacity-80 text-xs text-slate-400">Structure officielle de l'explication d'un texte à l'oral</p>
+   <h1 data-template-id="main-title" class="canva-text heading-font text-3xl mb-1 text-amber-400">Analyses Linéaires Officielles</h1>
+   <p data-template-id="subtitle" class="canva-text opacity-80 text-xs text-slate-400">Fiches de révision critiques pour l'Oral du Bac de Français</p>
   </header>
 
   <main class="w-full max-w-4xl flex-1 flex flex-col items-center">
    <div id="card-counter" class="mb-3 text-xs font-medium opacity-70 bg-slate-800 px-3 py-1 rounded-full text-slate-300"></div>
    
-   <div class="flip-card w-full cursor-pointer" id="flashcard" style="min-height: 520px;" onclick="toggleFlip()">
-    <div class="flip-inner w-full h-full relative" style="min-height: 520px;">
+   <div class="flip-card w-full cursor-pointer" id="flashcard" style="min-height: 650px;" onclick="toggleFlip()">
+    <div class="flip-inner w-full h-full relative" style="min-height: 650px;">
      
+     <!-- RECTO : IDENTITÉ -->
      <div class="flip-front rounded-2xl shadow-xl p-8 flex flex-col items-center justify-center text-center border border-white/10" id="card-front" style="background: linear-gradient(135deg, #1e3a5f, #2d5a87);">
-      <div id="front-number" class="text-7xl font-bold opacity-15 mb-2"></div>
-      <div id="front-title" class="text-3xl font-bold mb-2 text-white heading-font"></div>
-      <div id="front-author" class="text-xl font-medium text-amber-300 mb-1"></div>
-      <div id="front-work" class="text-sm italic text-slate-300 mb-6"></div>
+      <div id="front-number" class="text-8xl font-bold opacity-15 mb-2"></div>
+      <div id="front-title" class="text-4xl font-bold mb-3 text-white heading-font"></div>
+      <div id="front-author" class="text-2xl font-medium text-amber-300 mb-1"></div>
+      <div id="front-meta" class="text-sm italic text-slate-300 mb-6"></div>
       <div id="front-parcours" class="text-xs px-4 py-1.5 rounded-full font-bold bg-white/10 text-slate-200 border border-white/10 tracking-wide uppercase"></div>
-      <div class="mt-10 text-xs opacity-50 text-slate-300 flex items-center gap-1.5">
-        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Cliquez ou Espace pour ouvrir l'analyse
+      <div class="mt-12 text-xs opacity-50 text-slate-300 flex items-center gap-1.5">
+        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Cliquez ou Espace pour ouvrir l'analyse linéaire complète
       </div>
      </div>
      
-     <div class="flip-back rounded-2xl shadow-xl p-6 border border-slate-700 bg-slate-800 text-slate-100" id="card-back">
-      <div id="back-content" class="space-y-4"></div>
-      <div class="mt-6 border-t border-slate-700/60 pt-3 text-xs opacity-40 text-center flex items-center justify-center gap-1.5">
-        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Cliquez ou Espace pour retourner au titre
+     <!-- VERSO : ANALYSE STRUCTURÉE -->
+     <div class="flip-back rounded-2xl shadow-xl p-6 border border-slate-700 bg-slate-800 text-slate-100 flex flex-col justify-between" id="card-back">
+      <div class="scroll-container" id="back-scroll-content" onclick="event.stopPropagation();">
+        <div id="back-content" class="space-y-4"></div>
+      </div>
+      <div class="mt-4 border-t border-slate-700/60 pt-3 text-xs opacity-40 text-center flex items-center justify-center gap-1.5 shrink-0">
+        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Cliquez ici ou Espace pour retourner à la couverture
       </div>
      </div>
 
     </div>
    </div>
    
+   <!-- NAVIGATION -->
    <div class="flex items-center gap-4 mt-5">
     <button data-template-id="prev-btn" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 transition rounded-lg font-medium text-sm flex items-center gap-2 border border-slate-700" onclick="event.stopPropagation(); prevCard();">
       <i data-lucide="arrow-left" class="w-4 h-4"></i> Précédent
@@ -66,340 +71,273 @@
       Suivant <i data-lucide="arrow-right" class="w-4 h-4"></i>
     </button>
    </div>
-
-   <p class="text-xs opacity-40 mt-3 text-center hidden md:block text-slate-400">
-     Astuce clavier : Flèches [◀] [▶] pour changer de texte | [Barre d'Espace] pour retourner la fiche
-   </p>
   </main>
 
   <script src="/_sdk/editing_sdk.js"></script>
   <script>
         const cards = [
             { 
-                num: 1, 
-                title: "Le Dormeur du val", 
-                author: "Arthur Rimbaud", 
-                work: "Cahier de Douai, 1870", 
-                parcours: "Émancipations Créatrices",
-                intro: "Poème écrit par Rimbaud à 16 ans dans le contexte de la guerre franco-prussienne. C'est un sonnet en alexandrins d'apparence classique, mais qui brise les codes pour dénoncer discrètement l'horreur des combats.",
-                problematique: "Comment Rimbaud détruit-il l'image du paysage idéal pour révéler l'horreur absurde de la guerre ?", 
+                num: 1, title: "Le Dormeur du val", author: "Arthur Rimbaud", date: "1870", genre: "Poésie (Sonnet)", mouvement: "Parnasse / Modernité", parcours: "Émancipations créatrices",
+                situation: "Situé dans le 'Cahier de Douai', écrit à 16 ans sous le coup du conflit franco-prussien de 1870.",
+                problematique: "Comment Rimbaud subvertit-il le cliché du paysage idyllique pour révéler la tragédie de la guerre ?", 
+                reponse_prob: "Le poème utilise le motif du locus amoenus pour tromper l'attention, avant d'opérer une chute macabre par glissement de sens.",
+                ouverture: "À mettre en lien avec 'Le Mal' du même recueil, dénonciation polémique et directe du massacre des soldats.",
                 lineaire: [
-                    { mvt: "Mouvement 1 (v. 1 à 4) : Un cadre de nature idyllique et vivant", desc: "Description picturale d'un val verdoyant. Les mots 'verdure', 'rayons' et 'lumière' installent un cliché du *locus amoenus* (lieu agréable). La nature y est active et protectrice ('mousse', 'chante')." },
-                    { mvt: "Mouvement 2 (v. 5 à 11) : L'introduction du soldat et sa fausse léthargie", desc: "Le soldat apparaît jeune, vulnérable ('bouche ouverte', 'nu-tête'). Rimbaud utilise une métaphore maternelle ('Nature, berce-le chaudement') et compare son repos à celui d'un enfant malade pour susciter de l'empathie, maintenant l'illusion du sommeil." },
-                    { mvt: "Mouvement 3 (v. 12 à 14) : La chute tragique et la révélation de la mort", desc: "Le poète brise le calme par des détails sensoriels inquiétants ('le nez dans les essences', 'froid'). Le dernier vers contient le coup de théâtre avec la métaphore des 'deux trous rouges au côté droit', image dépouillée et violente qui dévoile la réalité du cadavre." }
-                ],
-                conclusion: "Une dénonciation efficace de la guerre qui passe par le contraste saisissant entre la pérennité de la nature et la fragilité de la jeunesse sacrifiée." 
+                    { mvt: "Mvt 1 (v. 1-4) : Nature vivante", desc: "Le nom trivial 'trou' s'alchimise grâce au complément 'de verdure'. La personnification 'chante une rivière' et la métaphore 'haillons d'argent' chargent le paysage d'une vitalité lumineuse. L'enjambement isole le verbe 'Luit' pour un effet de clarté crue." },
+                    { mvt: "Mvt 2 (v. 5-11) : Sommeil apparent", desc: "L'antithèse interne 'soldat jeune' souligne la vulnérabilité. Les ellipses 'bouche ouverte, nu-tête' installent l'ambiguïté repos/mort. La synesthésie thermique et chromatique 'frais cresson bleu' retarde l'aveu de la rigidité cadavérique. L'apostrophe 'Nature, berce-le' se heurte à la proposition juxtaposée tranchante 'il a froid'." },
+                    { mvt: "Mvt 3 (v. 12-14) : Chute macabre", desc: "La tournure négative 'Les parfums ne font pas frissonner sa narine' acte l'insensibilité biologique. L'adjectif 'Tranquille' en rejet fige la scène. La périphrase chromatique 'deux trous rouges' brise la dominance chromatique verte par un coup de théâtre révélant l'impact de balle mortel." }
+                ]
             },
             { 
-                num: 2, 
-                title: "Rêvé pour l'hiver", 
-                author: "Arthur Rimbaud", 
-                work: "Cahier de Douai, 1870", 
-                parcours: "Émancipations Créatrices",
-                intro: "Un sonnet fantaisiste dédié à 'Elle' (vraisemblablement Izambard). Il dépeint un voyage en train idéalisé, mêlant le jeu amoureux adolescent à une atmosphère d'évasion hivernale.",
-                problematique: "Comment ce poème construit-il un espace de fantaisie amoureuse tout en y mêlant une pointe de menace ludique ?", 
+                num: 2, title: "Rêvé pour l'hiver", author: "Arthur Rimbaud", date: "1870", genre: "Poésie (Sonnet)", mouvement: "Modernité poétique", parcours: "Émancipations créatrices",
+                situation: "Écrit lors des errances de Rimbaud en octobre 1870, introduisant le train moderne dans l'univers amical et amoureux.",
+                problematique: "Comment le poète transforme-t-il l'espace industriel en un cocon érotique et fantastique ?", 
+                reponse_prob: "En opposant la douceur de l'habitacle aux monstres extérieurs, il instaure un huis clos protecteur favorable au badinage adolescent.",
+                ouverture: "Ouverture possible sur 'La Prose du Transsibérien' de Blaise Cendrars pour le lyrisme lié à la vitesse ferroviaire.",
                 lineaire: [
-                    { mvt: "Mouvement 1 (Strophe 1) : Le cocon protecteur du wagon", desc: "Mise en place d'un intérieur confortable ('un petit wagon rose', 'coussins de bleu'). Le lexique du confort et de l'intimité ('nid', 'moelleux') isole les amants du reste du monde." },
-                    { mvt: "Mouvement 2 (Strophe 2) : L'extérieur hostile et monstrueux", desc: "Contraste net avec le monde extérieur personnifié de manière effrayante ('démons noirs', 'loups noirs'). Cette hostilité renforce par antithèse la douceur du cocon intérieur." },
-                    { mvt: "Mouvement 3 (Strophes 3-4) : Le badinage et la sensualité érotique", desc: "Le poème bascule dans le jeu amoureux direct. Rimbaud utilise la métaphore surprenante du baiser devenu 'petite araignée' qui voyage sur la peau de la jeune fille. Le ton devient impératif et joueur ('Cherche !') traduisant le désir adolescent." }
-                ],
-                conclusion: "Une émancipation créatrice qui transforme un voyage ordinaire en une aventure sensuelle, espiègle et moderne, typique de la poésie du jeune Rimbaud." 
+                    { mvt: "Mvt 1 (Strophe 1) : Le cocon", desc: "L'indicateur temporel 'L'hiver' est contrecarré par les adjectifs mélioratifs 'petit wagon rose' et 'coussins de bleu'. La métaphore spatiale 'nid de baisers fous' animalise l'amour et l'isole du reste du monde." },
+                    { mvt: "Mvt 2 (Strophe 2) : L'extérieur monstrueux", desc: "Le futur d'injonction 'Tu fermeras les yeux' donne au poète un rôle de gardien. La personnification 'Grimacer les ombres' et l'accumulation hyperbolique 'monstruosités hargneuses, populace de démons' dramatisent ironiquement le monde extérieur pour valoriser le confort intérieur." },
+                    { mvt: "Mvt 3 (Strophes 3-4) : Le jeu amical", desc: "La métaphore iconoclaste du baiser comparé à une 'folle araignée' s'affranchit du lyrisme traditionnel des fleurs. L'allitération en [k] ('courra par le cou') mime le frisson tactile. Le discours direct 'Cherche !' et l'euphémisme 'prendre du temps' scellent la complicité érotique et ludique." }
+                ]
             },
             { 
-                num: 3, 
-                title: "Ma Bohème", 
-                author: "Arthur Rimbaud", 
-                work: "Cahier de Douai, 1870", 
-                parcours: "Émancipations Créatrices",
-                intro: "Ce sonnet ferme le Cahier de Douai. Rimbaud s'y dépeint en vagabond misérable mais heureux, célébrant sa fusion intime avec la nature et sa liberté de créateur.",
-                problematique: "Comment Rimbaud transmute-t-il la pauvreté matérielle en une richesse poétique absolue ?", 
+                num: 3, title: "Ma Bohème", author: "Arthur Rimbaud", date: "1870", genre: "Poésie (Sonnet)", mouvement: "Bohème / Romantisme subverti", parcours: "Émancipations créatrices",
+                situation: "Dernier poème du 'Cahier de Douai', célébrant rétrospectivement la liberté souveraine des fugues de l'auteur.",
+                problematique: "Comment le dénuement matériel du vagabond se transmute-t-il en richesse poétique absolue ?", 
+                reponse_prob: "Par l'alchimie verbale, le poète sacralise sa misère matérielle en la fusionnant avec l'immensité du cosmos, source directe d'inspiration.",
+                ouverture: "On peut faire écho à la figure du poète vagabond et miséreux dépeinte par Jehan-Rictus dans 'Les Soliloques du Pauvre'.",
                 lineaire: [
-                    { mvt: "Mouvement 1 (v. 1 à 4) : La marche du poète sous la protection de la Muse", desc: "Évocation de la pauvreté ('poches crevées', 'paletot idéal'). L'antithèse immédiate avec l'invocation à la 'Muse' montre que le dénuement physique est sublimé par l'ambition poétique." },
-                    { mvt: "Mouvement 2 (v. 5 à 8) : Une nuit transfigurée par l'imaginaire", desc: "La misère est poétisée à l'aide de références aux contes ('Petit-Poucet') et à l'astronomie ('Grande Ourse'). Ses vêtements déchirés deviennent des parures face aux étoiles ('mes étoiles... avaient un doux froufrou')." },
-                    { mvt: "Mouvement 3 (v. 9 à 14) : La communion physique et l'acte de création", desc: "Scène de repos au bord des routes où le corps interagit avec les éléments. Les lacets de ses souliers usés deviennent les cordes d'une 'lyre' (métaphore de la poésie). La création naît littéralement du voyage." }
-                ],
-                conclusion: "Véritable manifeste poétique, ce texte prouve que l'émancipation créatrice de Rimbaud s'accomplit dans la rupture sociale et le mouvement permanent." 
+                    { mvt: "Mvt 1 (v. 1-4) : La marche idéale", desc: "L'imparfait de répétition 'Je m'en allais' ritualise l'errance. L'antithèse violente entre le matériel ('poches crevées') et le spirituel ('paletot devenait idéal') montre le mépris du réel bourgeois. L'apostrophe 'Muse !' et le terme médiéval 'féal' parodient le lyrisme noble." },
+                    { mvt: "Mvt 2 (v. 5-8) : La voûte céleste", desc: "L'intertexte du conte 'Petit-Poucet' assimile les rimes inventées à des cailloux salvateurs. La métaphore spatiale installe son dénuement dans la constellation de 'La Grande Ourse'. La synesthésie poétique 'doux froufrou' donne une matérialité soyeuse aux étoiles." },
+                    { mvt: "Mvt 3 (v. 9-14) : Le corps créateur", desc: "La métaphore de la rosée matinale transformée en 'vin de vigueur' sacralise la nature nourishing. L'acte physique final de pincer les élastiques de ses souliers blessés comme les cordes d'une 'lyre' prouve que l'art naît directement de la fatigue du corps en mouvement." }
+                ]
             },
             { 
-                num: 4, 
-                title: "Chaka (Section III)", 
-                author: "Léopold Sédar Senghor", 
-                work: "Les Éthiopiques, 1956", 
-                parcours: "Émancipations Créatrices",
-                intro: "Senghor réinvente la figure historique de Chaka, roi zoulou du XIXe siècle. Dans ce poème dramatique, Chaka fait face à la voix du Blanc (le colonisateur) pour justifier ses choix politiques et poétiques.",
-                problematique: "Comment Senghor réhabilite-t-il le mythe de Chaka pour dénoncer l'aliénation coloniale et revendiquer la dignité africaine ?", 
+                num: 4, title: "Chaka (Section III)", author: "Léopold Sédar Senghor", date: "1956", genre: "Poème dramatique", mouvement: "Négritude", parcours: "Émancipations créatrices",
+                situation: "Extrait des 'Éthiopiques', ce poème donne la parole au leader zoulou Chaka face aux accusations de la 'Voix du Blanc'.",
+                problematique: "Comment Senghor réhabilite-t-il Chaka pour mener le procès du colonialisme et revendiquer l'émancipation noire ?", 
+                reponse_prob: "En transformant la parole poétique en une arme politique incantatoire, le texte redonne sa dignité culturelle et historique au peuple opprimé.",
+                ouverture: "À mettre en parallèle direct avec le 'Cahier d'un retour au pays natal' d'Aimé Césaire pour la violence libératrice de la parole négre.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : Le témoignage de la souffrance des colonisés", desc: "Utilisation de l'anaphore prophétique 'Je voyais'. Chaka décrit un peuple déshumanisé, réduit à l'état de machines par le travail forcé imposé par l'Occident." },
-                    { mvt: "Mouvement 2 : La dénonciation de l'exploitation économique", desc: "Antithèse entre la richesse du sol exploité ('or noir') et la misère imposée aux autochtones. Le lexique de la géométrie et de l'enfermement montre la destruction des cultures traditionnelles au profit de la rentabilité coloniale." },
-                    { mvt: "Mouvement 3 : La prise de parole comme éveil et libération", desc: "La voix de Chaka se fait lyrique et politique. La métaphore de la 'fourmilière de silence' évoque un peuple prêt à briser ses chaînes. Le poète devient le guide de son peuple vers l'émancipation." }
-                ],
-                conclusion: "Senghor fait de Chaka le symbole du poète-engagé, démontrant que la création artistique et le combat politique sont indissociables pour retrouver la liberté." 
+                    { mvt: "Mvt 1 : Constat prophétique", desc: "L'anaphore structurelle 'Je voyais' pose le poète en témoin tragique. Les métaphores de la déshumanisation ('peuple de machines', 'outils') dénoncent la réification économique et corporelle mise en place par le système colonial." },
+                    { mvt: "Mvt 2 : L'exploitation méthodique", desc: "L'antithèse est marquée entre les richesses autochtones spoliées ('or', forêts) et la paupérisation des corps. Le champ lexical du cloisonnement géométrique ('frontières', 'cages') symbolise la destruction des repères et des structures sociales africaines." },
+                    { mvt: "Mvt 3 : La révolte verbale", desc: "La métaphore saisissante de la 'fourmilière de silence' annonce l'imminence de l'insurrection. Le lexique de la lumière et de l'aurore consacre la fonction du poète comme guide politique. Le rythme asymétrique s'émancipe de la métrique occidentale." }
+                ]
             },
             { 
-                num: 5, 
-                title: "L'épisode du merle", 
-                author: "Colette", 
-                work: "Sido, 1930", 
-                parcours: "La Célébration du Monde",
-                intro: "Œuvre de maturité où Colette rend hommage à sa mère, Sido. Cet extrait met en scène Sido observant un merle en train de manger des cerises, offrant une leçon de vie à sa fille.",
-                problematique: "Comment le portrait de Sido permet-il de célébrer un rapport unique, admiratif et respectueux envers le monde vivant ?", 
+                num: 5, title: "Sido", author: "Colette", date: "1930", genre: "Récit autobiographique", mouvement: "Littérature du XXe siècle", parcours: "Célébration du monde",
+                situation: "Incipit de l'œuvre où Colette dresse le portrait mythifié de sa mère Sido, figure tutélaire de sa vision de la nature.",
+                problematique: "Comment le portrait maternel se transforme-t-il en une célébration sacrée de la nature et de la liberté ?", 
+                reponse_prob: "À travers un éloge de la curiosité de sa mère et l'évocation des points cardinaux, Colette fait de Sido une divinité païenne qui orchestre le monde.",
+                ouverture: "On peut ouvrir sur 'Le Blé en herbe' pour la description sensuelle et panthéiste des paysages marins et la naissance de la sensibilité.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : Le portrait en action d'une mère attentive", desc: "Description du tempérament de Sido, définie par son éveil et sa curiosité constante face aux éléments de son jardin. Le lexique de la lumière l'entoure d'une aura bienveillante." },
-                    { mvt: "Mouvement 2 : La scène de contemplation de l'oiseau", desc: "Sido observe un merle piller ses cerises. Au lieu de s'énerver, elle s'émerveille. Accumulation de questions admiratives sur la beauté de l'oiseau. Le vol devient un spectacle poétique sacralisé." },
-                    { mvt: "Mouvement 3 : Le dialogue et la transmission de la philosophie de l'émerveillement", desc: "Échange verbal tendre et teinté d'ironie entre Colette (enfant) et sa mère. Sido recadre le point de vue matérialiste humain pour imposer le respect de la nature ('Qu'il est beau...')." }
-                ],
-                conclusion: "Sido n'est pas seulement une mère, elle est l'incarnation d'une philosophie qui refuse la domination de l'homme sur la nature pour préférer la contemplation." 
+                    { mvt: "Mvt 1 : Le portrait de la curiosité", desc: "L'usage de la focalisation interne met en relief le regard scrutateur de la mère. Les verbes d'observation ('regarder', 'épier') montrent une attention scientifique et poétique aux moindres frémissements du jardin, refusant la passivité domestique." },
+                    { mvt: "Mvt 2 : La rose des vents maternelle", desc: "La structure du texte se calque sur la géographie avec l'évocation des quatre points cardinaux. La métaphore de Sido placée au centre de l'univers en fait l'axe du monde. Les propositions exclamatives miment l'enthousiasme communicatif face aux éléments météorologiques." },
+                    { mvt: "Mvt 3 : La sacralisation du quotidien", desc: "Le lexique religieux ('offrande', 'autel') détourné vers la flore domestique divinise la nature. Sido n'est plus seulement une mère de famille mais une prêtresse païenne capable d'interpréter les signes cosmiques et de transmettre à sa fille le goût du monde." }
+                ]
             },
             { 
-                num: 6, 
-                title: "Jour gris", 
-                author: "Colette", 
-                work: "Les Vrilles de la vigne, 1908", 
-                parcours: "La Célébration du Monde",
-                intro: "Un texte poétique en prose dans lequel Colette s'adresse à son double ou à sa compagne Missy, s'évadant par la mémoire vers son pays natal de Bourgogne alors qu'elle se trouve au bord de la mer.",
-                problematique: "Comment l'écriture sensorielle fait-elle du pays natal un espace enchanté tout en révélant une blessure nostalgique ?", 
+                num: 6, title: "Les Vrilles de la vigne", author: "Colette", date: "1908", genre: "Recueil de courtes pièces lyriques", mouvement: "Belle Époque / Lyrisme intime", parcours: "Célébration du monde",
+                situation: "Texte éponyme ouvrant le recueil, métaphore poétique de l'émancipation personnelle de l'autrice après son divorce.",
+                problematique: "Comment la fable animalière sert-elle d'allégorie à la libération de la femme et de l'artiste ?", 
+                reponse_prob: "En s'appropriant l'histoire du rossignol prisonnier des vrilles, Colette chante la nécessité vitale de la création pour échapper aux pièges de la soumission.",
+                ouverture: "À rapprocher des 'Fables' de La Fontaine (comme 'Le Chêne et le Roseau') pour le recours au monde naturel pour délivrer une philosophie existentielle.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : La convocation d'un paysage mental par l'hypothèse", desc: "Emploi de l'anaphore 'Si tu...' qui construit un monde fantasmé et intime. Colette guide le lecteur dans le jardin de son enfance, recréé par le souvenir." },
-                    { mvt: "Mouvement 2 : La description onirique de la vallée et du brouillard", desc: "Personnification de la nature environnante. Le brouillard est décrit comme un élément protecteur, presque liquide, isolant ce paradis terrestre des agressions extérieures." },
-                    { mvt: "Mouvement 3 : La rupture douloureuse avec le présent", desc: "Le texte s'achève sur une note tragique et lyrique. La métaphore violente des 'racines qui saignent' montre que la célébration du passé engendre un déchirement intérieur face à la réalité du temps qui passe." }
-                ],
-                conclusion: "Colette célèbre le monde non comme une simple observatrice, mais à travers le prisme d'une sensibilité exacerbée où la beauté et la douleur cohabitent." 
+                    { mvt: "Mvt 1 : Le piège végétal", desc: "L'imparfait pose un cadre d'oppression invisible. La métaphore des 'vrilles de la vigne' représente les liens conjugaux aliénants. Le rythme haché par de nombreuses virgules mime l'asphyxie et l'immobilisation progressive de l'oiseau captif." },
+                    { mvt: "Mvt 2 : Le sursaut vital et le chant nocturne", desc: "L'utilisation du passé simple marque la rupture de la délivrance. L'allitération en [v] et [f] traduit le déploiement de l'énergie créatrice. Le chant n'est plus une simple distraction esthétique mais un cri de survie acharné contre la torpeur mortelle." },
+                    { mvt: "Mvt 3 : La célébration de l'indépendance", desc: "Le passage au présent de vérité générale ancre la leçon de liberté. L'antithèse entre la nuit douloureuse et la clarté conquise symbolise la renaissance de l'écrivaine, maîtresse absolue de sa parole et de son destin matériel." }
+                ]
             },
             { 
-                num: 7, 
-                title: "Le Dernier feu", 
-                author: "Colette", 
-                work: "Les Vrilles de la vigne, 1908", 
-                parcours: "La Célébration du Monde",
-                intro: "Dernier texte du recueil, centré sur l'arrivée du printemps. À travers la description minutieuse et passionnée des violettes, Colette ravive les souvenirs enfouis de sa jeunesse.",
-                problematique: "Comment l'évocation des violettes devient-elle le vecteur d'une célébration sensuelle de la mémoire ?", 
+                num: 7, title: "Les Confessions (Le ruban volé)", author: "Jean-Jacques Rousseau", date: "1782", genre: "Autobiographie", mouvement: "Les Lumières / Préromantisme", parcours: "Se raconter, se représenter",
+                situation: "Épisode célèbre du vol du ruban de Mlle Pontal, où le jeune Rousseau accuse injustement la servante Marion.",
+                problematique: "Comment Rousseau orchestre-t-il son texte pour confesser sa faute tout en cherchant à s'en disculper ?", 
+                reponse_prob: "Le récit joue sur le dédoublement entre le 'je' de l'enfant lâche et le 'je' de l'adulte philosophe qui analyse ses motivations psychologiques.",
+                ouverture: "Ouverture sur 'Les Bienveillantes' de Jonathan Littell pour la complexité de l'examen de conscience et la reconstruction mémorielle de la culpabilité.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : Un dialogue rythmé sur la nuance des couleurs", desc: "Structure en écho ('Plus mauves... non, plus bleues'). Ce débat chromatique met en valeur l'attention extrême accordée par Colette aux moindres détails de la nature." },
-                    { mvt: "Mouvement 2 : Le glissement synesthésique vers le souvenir", desc: "Le parfum de la fleur convoque immédiatement l'enfance. Le champ lexical olfactif s'allie au visuel (synesthésie) pour faire revivre les printemps d'autrefois." },
-                    { mvt: "Mouvement 3 : L'apothéose lyrique de la fleur", desc: "Anaphore du mot 'violettes' qui crée une litanie poétique. L'oxymore 'pauvresses parfumées' célèbre la simplicité de la nature qui offre pourtant la plus grande des richesses émotionnelles." }
-                ],
-                conclusion: "La célébration du monde chez Colette est indissociable d'une quête du temps perdu, où la nature guérit la mélancolie en ressuscitant le passé." 
+                    { mvt: "Mvt 1 : L'accusation lâche", desc: "Le dialogue théâtralisé oppose la candeur et la douceur de Marion à la fausseté de Rousseau. L'utilisation du verbe 'accuser' associé à un ton péremptoire montre la panique du jeune garçon. Les adjectifs soulignent l'injustice flagrante de la situation." },
+                    { mvt: "Mvt 2 : Le dédoublement de l'analyse", desc: "Rousseau interrompt la narration par des modalisateurs de recul critique ('je me rappelle', 'l'illusion'). Il substitue à la méchanceté délibérée l'explication par la 'honte' sociale, déplaçant le mobile du crime de la perversion vers la faiblesse humaine." },
+                    { mvt: "Mvt 3 : Le plaidoyer pro domo final", desc: "L'usage du rythme ternaire oratoire et des hyperboles de souffrance morale ('un poids cruel') montre le châtiment intérieur de l'adulte. L'aveu public devient paradoxalement une preuve de son authenticité morale et une demande d'absolution au lecteur." }
+                ]
             },
             { 
-                num: 8, 
-                title: "Lettre XI – Le jardin de Julie", 
-                author: "Jean-Jacques Rousseau", 
-                work: "La Nouvelle Héloïse, 1761", 
-                parcours: "La Célébration du Monde",
-                intro: "Le narrateur Saint-Preux visite l'Élysée, le jardin secret aménagé par Julie. Rousseau y expose sa vision de la nature idéale, s'opposant radicalement aux jardins géométriques à la française de son époque.",
-                problematique: "Comment Rousseau célèbre-t-il un idéal de nature sauvage qui imite l'art tout en effaçant l'artifice humain ?", 
+                num: 8, title: "Les Réveries du promeneur solitaire", author: "Jean-Jacques Rousseau", date: "1782", genre: "Essai / Récit autobiographique", mouvement: "Préromantisme", parcours: "Célébration du monde / Solitude",
+                situation: "Cinquième promenade, centrée sur le séjour idyllique de l'auteur à l'Île de Saint-Pierre, loin de la persécution des hommes.",
+                problematique: "Comment la description de la dérive aquatique devient-elle l'expression d'un bonheur existentiel absolu ?", 
+                reponse_prob: "En associant le balancement de la barque au rythme de sa conscience, Rousseau formule l'expérience mystique du sentiment de l'existence.",
+                ouverture: "On peut ouvrir sur le poème 'Le Lac' d'Alphonse de Lamartine pour la reprise romantique du motif de l'eau comme miroir de l'âme et du temps suspendu.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : L'émerveillement et la surprise du visiteur", desc: "Le narrateur exprime sa surprise face à l'absence de symétrie. Le lexique de l'enchantement montre qu'il se croit dans un lieu désert alors qu'il est au cœur d'une propriété gérée." },
-                    { mvt: "Mouvement 2 : La profusion ordonnée du monde végétal", desc: "Longues énumérations d'herbes odorantes et d'allées sinueuses. Rousseau valorise le désordre apparent qui respecte le cycle naturel de la flore et favorise la biodiversité (oiseaux, eau vive)." },
-                    { mvt: "Mouvement 3 : Le triomphe de la Nature sur l'Artifice", desc: "Développement d'une critique philosophique contre l'orgueil humain qui mutile la nature. Le jardin de Julie célèbre une nature 'qui n'a l'air de rien' mais surpasse toutes les créations artificielles des rois." }
-                ],
-                conclusion: "Ce texte pré-romantique célèbre une nature refuge, miroir de l'âme sensible et lieu de liberté, loin des contraintes de la société corrompue." 
+                    { mvt: "Mvt 1 : La rupture avec la société", desc: "Le champ lexical de l'isolement et de l'éloignement physique montre la rupture volontaire avec le monde social. L'utilisation d'imparfaits de durée installe une temporalité suspendue, propice au détachement intellectuel et physique." },
+                    { mvt: "Mvt 2 : L'osmose avec le rythme de l'eau", desc: "La description métaphorique de la barque 'laissée à la dérive' reflète l'abandon de la volonté. L'allitération en [l] et [m] ('le flux et le reflux de l'eau') crée une harmonie imitative mimant le bercement des vagues et l'apaisement interne." },
+                    { mvt: "Mvt 3 : Le sentiment pur de l'existence", desc: "Le passage à un registre philosophique abstrait élimine tout besoin matériel. L'usage du présent intemporel définit le bonheur absolu comme l'absence de manque. La conscience se suffit à elle-même dans une célébration pure de l'instant présent." }
+                ]
             },
             { 
-                num: 9, 
-                title: "On ne badine pas avec l'amour (II, 5)", 
-                author: "Alfred de Musset", 
-                work: "1834", 
-                parcours: "Les jeux du cœur et de la parole",
-                intro: "Scène majeure (le proverbe) où Camille, tout juste sortie du couvent, refuse de s'engager envers Perdican par peur de souffrir, provoquant une tirade passionnée de ce dernier.",
-                problematique: "Comment ce face-à-face tragique et lyrique révèle-t-il le conflit entre deux conceptions inconciliables de l'amour ?", 
+                num: 9, title: "Spleen (IV)", author: "Charles Baudelaire", date: "1857", genre: "Poésie", mouvement: "Symbolisme / Modernité", parcours: "Alchimie poétique : la boue et l'or",
+                situation: "Poème de clôture de la série des 'Spleen' de la section 'Spleen et Idéal', marquant la faillite totale de l'esprit de l'artiste.",
+                problematique: "Comment la gradation dramatique met-elle en scène l'étouffement de l'âme et la victoire de l'Angoisse ?", 
+                reponse_prob: "Le poème enferme méthodiquement l'espace intérieur par des structures anaphoriques avant de déclencher une agonie psychologique.",
+                ouverture: "À mettre en relation avec 'Spleen' de Paul Verlaine ('Il pleure dans mon cœur') pour l'indistinction entre climat extérieur et douleur interne.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : L'exposé dogmatique et froid de Camille", desc: "Camille utilise le discours rapporté pour répéter les traumatismes vécus par les religieuses déçues par l'amour. Sa parole est froide, rigide, rationnelle, refusant tout risque émotionnel." },
-                    { mvt: "Mouvement 2 : La réponse lyrique et passionnée de Perdican", desc: "Perdican se lance dans une tirade célèbre caractérisée par l'accumulation et des anaphores ('Tous les hommes sont...'). Il accepte l'imperfection humaine et la douleur comme le prix obligatoire de l'existence." },
-                    { mvt: "Mouvement 3 : Le point de rupture dramatique", desc: "L'affrontement se cristallise autour de l'opposition entre l'amour absolu et divin (Camille) et l'amour terrestre et imparfait (Perdican). La tension annonce l'impossibilité de communiquer sincèrement." }
-                ],
-                conclusion: "La parole cesse ici d'être un badinage pour devenir le terrain d'un combat existentiel où l'orgueil des personnages condamne d'avance leur bonheur." 
+                    { mvt: "Mvt 1 (strophes 1-3) : L'enfermement", desc: "L'anaphore de la conjonction 'Quand' suspend la principale pour créer une attente angoissante. La comparaison 'le ciel pèse comme un couvercle' rabaisse l'infini cosmique à une geôle étouffante. L'oxymore 'jour noir' détruit l'Idéal." },
+                    { mvt: "Mvt 2 (strophe 4) : L'explosion de la crise", desc: "La locution 'tout à coup' introduit la rupture temporelle. La personnification violente des cloches qui 'sautent avec furie' et lancent un 'affreux hurlement' transpose la panique acoustique interne en fureur cosmique. L'allitération en [r] agresse l'oreille." },
+                    { mvt: "Mvt 3 (strophe 5) : La défaite", desc: "La métaphore des 'longs corbillards' défilant 'dans mon âme' matérialise l'enterrement de la conscience. Les allégories antithétiques tranchent le combat : l'Espoir est mis en apposition comme 'Vaincu' tandis que l'Angoisse 'plante son drapeau noir' sur le crâne soumis." }
+                ]
             },
             { 
-                num: 10, 
-                title: "On ne badine pas avec l'amour (III, 3)", 
-                author: "Alfred de Musset", 
-                work: "1834", 
-                parcours: "Les jeux du cœur et de la parole",
-                intro: "Perdican, vexé par l'orgueil de Camille, décide de se venger en séduisant Rosette (une jeune paysanne) sous les yeux de Camille, préalablement cachée derrière une tapisserie.",
-                problematique: "Comment Musset orchestre-t-il la cruauté de la manipulation amoureuse à travers le stratagème de la double énonciation ?", 
+                num: 10, title: "Alchimie de la douleur", author: "Charles Baudelaire", date: "1857", genre: "Poésie (Sonnet)", mouvement: "Symbolisme", parcours: "Alchimie poétique : la boue et l'or",
+                situation: "Placé au cœur des 'Fleurs du Mal', ce sonnet explicite le processus inversé de l'alchimie baudelairienne où l'or se mue en boue.",
+                problematique: "Comment le poète retourne-t-il le mythe de Midas pour exprimer sa condamnation à la souffrance ?", 
+                reponse_prob: "À travers une structure d'antithèse systématique, Baudelaire démontre que sa sensibilité morbide transforme la beauté du monde en deuil.",
+                ouverture: "On peut ouvrir sur le poème 'L'Albatros' pour la figure du poète inadapté dont les ailes de géant l'empêchent de marcher sur terre.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : La mise en place du piège et le monologue de Camille", desc: "Camille, cachée, exprime ses doutes. Le spectateur est placé en situation d'ironie dramatique : il sait que la scène qui va suivre est un jeu de dupes destiné à blesser." },
-                    { mvt: "Mouvement 2 : La fausse déclaration d'amour de Perdican", desc: "Perdican utilise une rhétorique emphatique et un ton surjoué face à Rosette. Il détourne des souvenirs partagés avec Camille pour donner du poids à ses mensonges et s'assurer que Camille l'entend." },
-                    { mvt: "Mouvement 3 : La candeur de Rosette, victime innocente du jeu", desc: "Rosette reçoit ces mots avec une sincérité totale. Le contraste entre la cruauté des deux aristocrates et l'innocence de la paysanne crée un sentiment de malaise pour le spectateur." }
-                ],
-                conclusion: "La parole devient une arme destructrice. Ce jeu cruel scelle le destin tragique des trois personnages, montrant les dangers de la manipulation verbale." 
+                    { mvt: "Mvt 1 : L'interpellation de la Nature", desc: "L'apostrophe ironique à la vie montre un poète en décalage. L'antithèse entre l'éclat de la lumière et la mélancolie de l'auteur introduit le dédoublement alchimique négatif. Les parallélismes de construction soulignent l'opposition permanente." },
+                    { mvt: "Mvt 2 : Le mythe inversé de Midas", desc: "La référence mythologique à Midas subit un traitement dysphémique. Au lieu de transmuter le vil en métal précieux, le verbe de transformation agit à rebours. L'or devient fer, la vie devient néant sous l'effet du regard du poète malade." },
+                    { mvt: "Mvt 3 : La célébration du tombeau", desc: "Les tercets scellent l'esthétique macabre par une métaphore architecturale : l'esprit est décrit comme un cimetière ou un échafaudage de deuil. Les rimes croisées accentuent la fatalité rythmique de cette condamnation à la tristesse éternelle." }
+                ]
             },
             { 
-                num: 11, 
-                title: "On ne badine pas avec l'amour (III, 8)", 
-                author: "Alfred de Musset", 
-                work: "1834", 
-                parcours: "Les jeux du cœur et de la parole",
-                intro: "Dénouement tragique de la pièce. Camille et Perdican s'avouent enfin leur amour dans une chapelle, mais ils ignorent que Rosette les observe en secret.",
-                problematique: "Comment ce dénouement fait-il basculer brutalement la pièce de la comédie de mœurs vers la tragédie absolue ?", 
+                num: 11, title: "L'Invitation au voyage", author: "Charles Baudelaire", date: "1857", genre: "Poésie", mouvement: "Symbolisme / Esthétisme", parcours: "Alchimie poétique : la boue et l'or",
+                situation: "Poème de l'évasion spirituelle et amoureuse vers un ailleurs idéalisé (la Hollande mythifiée), loin de la boue du quotidien.",
+                problematique: "Comment le poète parvient-il à créer un univers de pure synesthésie propice à l'apaisement de l'âme ?", 
+                reponse_prob: "Le texte utilise un refrain incantatoire et un lexique pictural pour dissoudre la dureté du réel dans une harmonie de luxe, de calme et de volupté.",
+                ouverture: "À mettre en regard avec la version en prose du même poème dans 'Le Spleen de Paris' pour analyser les différences formelles de l'idéal.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : L'aveu mutuel et la chute des masques", desc: "Rupture avec l'orgueil passé. Les amants abandonnent les jeux de rôles et s'expriment avec un lyrisme épuré et sincère, retrouvant enfin une parole vraie." },
-                    { mvt: "Mouvement 2 : Le cri de mort et la découverte du drame", desc: "Un cri retentit en coulisse. Le corps sans vie de Rosette, morte de chagrin (ou de saisissement), est découvert. Le champ lexical du crime ('meurtrier', 'sang') envahit soudain la scène." },
-                    { mvt: "Mouvement 3 : La séparation définitive et la sentence finale", desc: "Camille quitte Perdican sur un mot irréversible : 'Elle est morte. Adieu, Perdican.'. Le titre de la pièce prend tout son sens : le badinage langagier a tué l'innocence." }
-                ],
-                conclusion: "Musset montre qu'on ne badine pas impunément avec les sentiments. La parole, si elle est manipulée par orgueil, détruit les êtres de façon définitive." 
+                    { mvt: "Mvt 1 : L'appel de la femme-sœur", desc: "L'usage de termes d'affection intimistes ('Mon enfant, ma sœur') installe une atmosphère de complicité chaste. Les verbes au conditionnel ('aller', 'aimer') projettent l'action dans une temporalité idéale et onirique, préservée du temps destructeur." },
+                    { mvt: "Mvt 2 : La synesthésie du décor", desc: "La description de l'ameublement recourt à des métaphores sensorielles. Les correspondances verticales lient les parfums ambrés, les reflets des miroirs et la rareté des meubles pour saturer l'esprit de sensations douces, annulant toute agression extérieure." },
+                    { mvt: "Mvt 3 : L'apothéose lumineuse", desc: "Le refrain en alexandrins ('Là, tout n'est qu'ordre et beauté...') agit comme une formule magique de stabilisation psychique. La lumière déclinante de la fin du poème dore le paysage, accomplissant le miracle alchimique de transformer le voyage en or spirituel." }
+                ]
             },
             { 
-                num: 12, 
-                title: "Dom Juan (II, 2)", 
-                author: "Molière", 
-                work: "1665", 
-                parcours: "Les jeux du cœur et de la parole",
-                intro: "Dom Juan, après avoir échappé à un naufrage, entreprend de séduire Charlotte, une jeune paysanne promise au paysan Pierrot, en usant de toute sa rhétorique libertine.",
-                problematique: "Comment Molière dénonce-t-il la puissance manipulatrice et prédatrice du langage noble face à l'innocence populaire ?", 
+                num: 12, title: "Le Malade imaginaire (Acte III, scène 10)", author: "Molière", date: "1673", genre: "Comédie-ballet", mouvement: "Classicisme", parcours: "Spectacle et comédie",
+                situation: "Scène de bravoure comique où Toinette, déguisée en médecin de grande renommée, examine son maître Argan.",
+                problematique: "Comment le procédé du déguisement et de la parodie satirique permet-il de démasquer le charlatanisme médical ?", 
+                reponse_prob: "En retournant le jargon dogmatique contre lui-même, Molière utilise le comique de mots et de situation pour libérer Argan par le rire.",
+                ouverture: "On peut ouvrir sur 'Le Médecin malgré lui' pour la permanence de la satire médicale chez Molière fondée sur l'imposture du langage.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : La stratégie de la flatterie physique", desc: "Dom Juan utilise des hyperboles ridicules mais flatteuses ('mille coups', 'vos yeux') pour éblouir Charlotte et rompre sa méfiance naturelle. Il s'attaque à sa vanité." },
-                    { mvt: "Mouvement 2 : La fausse promesse de mariage", desc: "Pour emporter l'adhésion, il effectue de faux serments religieux et propose le mariage, une absurdité sociale pour l'époque. Le comique de situation repose sur la naïveté de la victime." },
-                    { mvt: "Mouvement 3 : La capitulation de Charlotte", desc: "Charlotte cède face à l'assurance verbale du noble ('vous faites que l'on vous croit'). Molière utilise le décalage des niveaux de langue (soutenu/patois) pour souligner la violence des rapports de classe." }
-                ],
-                conclusion: "Une mise en scène brillante du langage comme outil d'oppression sociale et de séduction amorale, annonçant le châtiment futur du suborneur." 
+                    { mvt: "Mvt 1 : L'entrée en scène spectaculaire", desc: "Le comique de situation repose sur le costume outrancier de Toinette. L'accumulation d'adjectifs hyperboliques pour qualifier sa propre science médicale installe l'ironie dramatique : le public est complice de la mystification d'Argan." },
+                    { mvt: "Mvt 2 : La parodie du diagnostic scientifique", desc: "Toinette utilise l'anaphore comique 'Le poumon !' pour balayer toutes les affections réelles d'Argan. L'usage de termes pseudo-savants latinisés parodie la pédanterie de la faculté de médecine, réduisant la science à un pur exercice de rhétorique creuse." },
+                    { mvt: "Mvt 3 : Le triomphe du bon sens populaire", desc: "Le rythme du dialogue s'accélère par des stichomythies. L'injonction burlesque d'amputer le bras d'Argan pousse l'absurdité médicale à son paroxysme, provoquant la prise de conscience (ou la résistance) du malade par le rire libérateur." }
+                ]
             },
             { 
-                num: 13, 
-                title: "Discours de la servitude volontaire (Partie 1)", 
-                author: "Étienne de La Boétie", 
-                work: "Rédigé vers 1548", 
-                parcours: "Défendre et entretenir la liberté",
-                intro: "Pamphlet humaniste rédigé par La Boétie durant sa jeunesse. L'auteur y pose une question révolutionnaire : pourquoi des millions d'hommes acceptent-ils d'obéir aveuglément à un seul tyran ?",
-                problematique: "Comment La Boétie utilise-t-il la rhétorique de l'indignation pour bousculer le confort de ses lecteurs et dénoncer l'absurdité de la soumission ?", 
+                num: 13, title: "Le Malade imaginaire (Acte I, scène 5)", author: "Molière", date: "1673", genre: "Comédie-ballet", mouvement: "Classicisme", parcours: "Spectacle et comédie",
+                situation: "Scène de confrontation entre Argan et sa fille Angélique au sujet du mariage arrangé avec le ridicule Thomas Diafoirus.",
+                problematique: "Comment le conflit familial met-il en scène l'opposition entre l'aveuglement égoïste et la vérité du sentiment amoureux ?", 
+                reponse_prob: "Molière utilise le quiproquo initial puis l'affrontement argumentatif direct pour opposer la logique tyrannique de la maladie à la jeunesse.",
+                ouverture: "À rapprocher de la confrontation dramatique entre Harpagon et son fils Cléante dans 'L'Avare' sur la tyrannie paternelle.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : L'accumulation de questions rhétoriques indignées", desc: "L'auteur bombarde le lecteur de questions pour souligner le paradoxe de la situation. Le polyptote 'obéir/servir' permet de distinguer la soumission forcée du consentement lâche." },
-                    { mvt: "Mouvement 2 : L'apostrophe pathétique et provocatrice", desc: "Utilisation de formules dépréciatives en cascade ('Pauvres gens misérables', 'peuples insensés'). Cette provocation vise à piquer l'orgueil des opprimés pour les réveiller." },
-                    { mvt: "Mouvement 3 : L'hypotypose des souffrances endurées", desc: "Tableau réaliste et violent de la spoliation quotidienne (vols des récoltes, enfants envoyés à la guerre). La Boétie montre que le peuple travaille activement à nourrir son propre bourreau." }
-                ],
-                conclusion: "Un texte fondateur qui déplace la faute : le problème n'est pas la force du tyran, mais la passivité et le consentement des sujets." 
+                    { mvt: "Mvt 1 : Le quiproquo comique", desc: "La scène s'ouvre sur un malentendu de langage : le pronom 'il' désigne deux personnes différentes pour le père et la fille. Ce décalage crée un comique de mots qui souligne la déconnexion totale d'Argan face aux sentiments de sa fille." },
+                    { mvt: "Mvt 2 : La révélation du contrat tyrannique", desc: "La rupture se produit lorsque le nom de Diafoirus est prononcé. Les phrases impératives d'Argan ('Je vous dis...', 'Vous obéirez') traduisent l'abus de pouvoir patriarcal. La maladie devient un prétexte pour asservir l'entourage." },
+                    { mvt: "Mvt 3 : La résistance d'Angélique", desc: "Le ton passe de la comédie légère à une tension dramatique. Angélique utilise des négations catégoriques et un rythme de répliques ferme pour refuser l'aliénation de son corps, incarnant le triomphe de la sincérité sur l'autorité aveugle." }
+                ]
             },
             { 
-                num: 14, 
-                title: "Discours de la servitude volontaire (Partie 2)", 
-                author: "Étienne de La Boétie", 
-                work: "Rédigé vers 1548", 
-                parcours: "Défendre et entretenir la liberté",
-                intro: "Dans la suite de son traité, La Boétie approfondit son analyse psychologique et politique en démontrant les mécanismes logiques de l'oppression auto-entretenue.",
-                problematique: "Par quelle démonstration logique La Boétie prouve-t-il que le tyran n'a de pouvoir que celui que le peuple lui abandonne ?", 
+                num: 14, title: "Le Malade imaginaire (Acte II, scène 5)", author: "Molière", date: "1673", genre: "Comédie-ballet", mouvement: "Classicisme", parcours: "Spectacle et comédie",
+                situation: "Présentation officielle de Thomas Diafoirus à Argan, scène de compliments parodiques et de pédanterie outrancière.",
+                problematique: "Comment la récitation mécanique du compliment théâtralise-t-elle la bêtise et le ridicule des Diafoirus ?", 
+                reponse_prob: "Le texte repose sur l'esthétique de la marionnette mécanique : Thomas récite sa leçon sans s'adapter à ses interlocuteurs, créant un comique irrésistible de gestes.",
+                ouverture: "On peut ouvrir sur 'Les Femmes savantes' pour la dénonciation de la pédanterie et du savoir factice qui étouffe le bon sens.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : La déconstruction du pouvoir tyrannique", desc: "Anaphore interrogative montrant les limites physiques du tyran ('D'où a-t-il tant de yeux... si ce n'est de vos rangs ?'). Le tyran est ramené à sa condition de simple mortel démuni." },
-                    { mvt: "Mouvement 2 : L'accusation de complicité (vocabulaire juridique)", desc: "Le peuple est qualifié de 'receleur' et de 'complice' de ses propres malheurs. Le parallélisme syntaxique 'vous [faites cela] afin qu'il [puisse vous détruire]' souligne la folie collective." },
-                    { mvt: "Mouvement 3 : La gradation des violences subies", desc: "Énumération des exactions subies par le peuple ('épier, frapper, fouler'). Cette gradation logique vise à faire prendre conscience de la boucle d'oppression créée par la peur." }
-                ],
-                conclusion: "La Boétie réalise une démonstration scientifique du pouvoir : tout système tyrannique repose uniquement sur une pyramide de complicités inconscientes." 
+                    { mvt: "Mvt 1 : Le compliment mécanique", desc: "Thomas Diafoirus s'exprime à travers un discours entièrement figé, plein de figures de rhétorique obsolètes (métaphores mythologiques usées). Son incapacité à s'interrompre montre qu'il n'est qu'un automate sans pensée propre." },
+                    { mvt: "Mvt 2 : L'inversion comique des destinataires", desc: "Le comique de geste éclate lorsque Thomas s'adresse à la mauvaise personne (la servante Toinette ou la belle-mère absente) pour réciter son éloge de l'épouse. Ce bafouillage scénique détruit toute sa prétention intellectuelle." },
+                    { mvt: "Mvt 3 : L'admiration stupide du père", desc: "Les interjections laudatives d'Argan ('Ah !', 'Merveilleux !') révèlent l'étendue de sa crédulité. Molière montre que l'aveuglement de la victime est le miroir parfait de la bêtise de l'imposteur, scellant le pacte comique." }
+                ]
             },
             { 
-                num: 15, 
-                title: "Discours de la servitude volontaire (Partie 3)", 
-                author: "Étienne de La Boétie", 
-                work: "Rédigé vers 1548", 
-                parcours: "Défendre et entretenir la liberté",
-                intro: "Dernière étape de la réflexion où La Boétie expose les ruses du pouvoir pour abrutir les masses (le *panem et circenses* romain) avant de proposer un remède inédit : la non-violence.",
-                problematique: "Comment l'auteur analyse-t-il les stratégies de manipulation du pouvoir avant d'appeler à un sursaut pacifique ?", 
+                num: 15, title: "Note conjointe", author: "Charles Péguy", date: "1914", genre: "Essai philosophique / Pamphlet", mouvement: "Littérature du début du XXe siècle", parcours: "Émancipations créatrices / Modernité",
+                situation: "Texte critique où Péguy s'attaque aux dérives du monde moderne, de la standardisation intellectuelle et de la perte du sacré.",
+                problematique: "Comment Péguy déploie-t-il une prose incantatoire pour condamner l'aliénation de l'homme par la technique moderne ?", 
+                reponse_prob: "Par un style unique fait de répétitions systématiques et d'accumulations, il construit un réquisitoire rythmique contre la déhumanisation bourgeoise.",
+                ouverture: "À mettre en lien avec 'La Crise de l'esprit' de Paul Valéry (1919) pour le constat partagé de la fragilité des civilisations face à la modernité.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : L'exemple historique des Lydiens", desc: "La Boétie utilise un exemple de l'Antiquité pour illustrer sa thèse. Les théâtres, jeux et bordels sont qualifiés de 'drogueries du tyran', outils d'abrutissement programmés." },
-                    { mvt: "Mouvement 2 : La comparaison avec le monde animal", desc: "Les hommes soumis sont comparés à des bêtes dociles que l'on flatte et apprivoise. Le lexique du piège montre la perte de la dignité et de la raison humaine." },
-                    { mvt: "Mouvement 3 : L'exhortation finale et la métaphore du colosse", desc: "Formulation du concept de désobéissance civile ('Soyez résolus à ne plus servir, et vous voilà libres'). Le tyran est comparé à un grand colosse de terre dont il suffit de retirer la base pour qu'il s'effondre tout seul." }
-                ],
-                conclusion: "Un texte visionnaire qui refuse l'appel au sang ou à la révolution violente, affirmant que la liberté est un simple choix de conscience individuelle." 
+                    { mvt: "Mvt 1 : Le constat de la déchéance du monde moderne", desc: "L'usage d'un lexique de la rupture historique présente l'époque contemporaine comme une anomalie. Les antithèses répétées opposent le passé organique et respectueux au présent mécanique et désacralisé." },
+                    { mvt: "Mvt 2 : La parodie de la standardisation", desc: "Péguy utilise une syntaxe répétitive, accumulant les propositions subordonnées en boucles. Ce procédé stylistique mime la chaîne industrielle et l'automatisme de la pensée qu'il dénonce chez ses contemporains." },
+                    { mvt: "Mvt 3 : L'appel au sursaut spirituel", desc: "Le texte s'achève sur un ton prophétique. Les propositions s'allongent dans un rythme ternaire oratoire. Le vocabulaire de la fidélité et de l'enracinement propose une émancipation par le retour aux valeurs fondamentales de l'esprit." }
+                ]
             },
             { 
-                num: 16, 
-                title: "Le Loup et le Chien", 
-                author: "Jean de La Fontaine", 
-                work: "Fables, 1668", 
-                parcours: "Défendre et entretenir la liberté",
-                intro: "Fable célèbre ouvrant le premier recueil. Derrière le dialogue plaisant de deux animaux, La Fontaine propose un apologue philosophique percutant sur la condition de l'intellectuel et du citoyen face au pouvoir absolu.",
-                problematique: "Comment le dialogue argumentatif entre le Loup et le Chien permet-il de mener un réquisitoire contre la soumission matérielle ?", 
+                num: 16, title: "Zone", author: "Guillaume Apollinaire", date: "1913", genre: "Poésie (Vers libres)", mouvement: "Cubisme littéraire / Esprit nouveau", parcours: "Émancipations créatrices",
+                situation: "Poème liminaire d'Alcools, déambulation urbaine et nostalgique qui redéfinit la beauté poétique à l'aube de la modernité.",
+                problematique: "Comment Apollinaire brise-t-il les conventions de la poésie traditionnelle pour célébrer la modernité urbaine ?", 
+                reponse_prob: "En supprimant la ponctuation et en juxtaposant l'art classique et le quotidien industriel (tours, affiches, avions), il crée une esthétique du collage simultané.",
+                ouverture: "On peut ouvrir sur les peintures cubistes de Robert Delaunay (série sur la Tour Eiffel) pour la déconstruction simultanée de la perspective.",
                 lineaire: [
-                    { mvt: "Mouvement 1 : La rencontre et le contraste physique initial", desc: "Présentation des deux forces en présence. Le Loup est maigre, affamé mais libre ; le Chien est gras, puissant mais domestiqué. Les antithèses posent immédiatement les termes du dilemme éthique." },
-                    { mvt: "Mouvement 2 : Le discours séducteur du Chien", desc: "Le Chien fait l'apologie de son confort matériel (nourriture facile, caresses du maître). Il utilise une rhétorique commerciale pour convaincre le Loup de renoncer à sa vie sauvage en échange de la sécurité." },
-                    { mvt: "Mouvement 3 : La chute fulgurante et le refus du Loup", desc: "Le Loup remarque la marque pelée sur le cou du Chien : le 'collier'. Le rythme s'accélère par de courtes questions/réponses. Comprenant que le confort exige l'aliénation, le Loup s'enfuit. Sa fuite physique valide la supériorité de la liberté." }
-                ],
-                conclusion: "La Fontaine s'inscrit dans la lignée de La Boétie : la sécurité matérielle offerte par un maître n'est qu'un leurre doré qui ne vaudra jamais le prix de l'indépendance." 
+                    { mvt: "Mvt 1 (v. 1-10) : Le refus du passé", desc: "L'affirmation immédiate en attaque 'À la fin tu es las de ce monde ancien' pose la rupture. L'apostrophe familière à la Tour Eiffel comparée à une 'bergère' réhabilite le paysage industriel par un détournement des codes pastoraux classiques." },
+                    { mvt: "Mvt 2 (v. 11-24) : L'esthétique du collage urbain", desc: "L'absence de ponctuation crée une fluidité absolue où les prospectus, les affiches et la rue s'assemblent. Le lexique de la réclame commerciale entre en collision avec la poésie noble, accomplissant l'émancipation totale du matériau poétique." },
+                    { mvt: "Mvt 3 (v. 25 et fin) : Le lyrisme de la simultanéité", desc: "L'utilisation changeante des pronoms ('je' / 'tu') traduit l'éclatement du sujet lyrique. La métaphore de l'aviation assimilée à un oiseau mystique réconcilie la technologie moderne et le sacré, jetant les bases de l'Esprit Nouveau." }
+                ]
             }
         ];
 
-        let current = 0;
+        let currentCardIndex = 0;
+        const flashcardElement = document.getElementById('flashcard');
 
-        function render() {
-            const c = cards[current];
-            document.getElementById('card-counter').textContent = `Fiche ${c.num} / ${cards.length}`;
-            document.getElementById('front-number').textContent = c.num < 10 ? `0${c.num}` : c.num;
-            document.getElementById('front-title').textContent = c.title;
-            document.getElementById('front-author').textContent = c.author;
-            document.getElementById('front-work').textContent = c.work;
-            document.getElementById('front-parcours').textContent = c.parcours;
-
-            const back = document.getElementById('back-content');
+        function renderCard() {
+            flashcardElement.classList.remove('flipped');
+            const card = cards[currentCardIndex];
             
-            // Génération dynamique des mouvements linéaires
-            const itemsLineaires = c.lineaire.map(item => `
-                <div class="bg-slate-900/40 p-3 rounded border border-slate-700/40">
-                    <p class="font-bold text-amber-400 text-xs tracking-wider uppercase mb-1">${item.mvt}</p>
-                    <p class="text-xs text-slate-200 leading-relaxed">${item.desc}</p>
+            // Front
+            document.getElementById('front-number').textContent = String(card.num).padStart(2, '0');
+            document.getElementById('front-title').textContent = card.title;
+            document.getElementById('front-author').textContent = card.author;
+            document.getElementById('front-meta').textContent = `${card.genre} • ${card.date}`;
+            document.getElementById('front-parcours').textContent = card.parcours;
+            
+            // Counter
+            document.getElementById('card-counter').textContent = `${currentCardIndex + 1} / ${cards.length}`;
+            
+            // Back
+            const backContentElement = document.getElementById('back-content');
+            let mvtHTML = card.lineaire.map(m => `
+                <div class="border-l-2 border-amber-500 pl-3 py-2 bg-slate-900/40 p-3 rounded-r-xl border-t border-b border-r border-slate-700/40">
+                    <h4 class="font-bold text-[11px] text-amber-400 uppercase tracking-wider mb-1">${m.mvt}</h4>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify">${m.desc}</p>
                 </div>
             `).join('');
 
-            back.innerHTML = `
-                <div class="border-b border-slate-700 pb-2">
-                    <div class="flex justify-between items-start">
-                        <h2 class="font-bold text-lg text-amber-400 heading-font">${c.title}</h2>
-                        <span class="text-[10px] bg-slate-700 px-2 py-0.5 rounded text-slate-300 font-mono">U.N. ${c.num}</span>
+            backContentElement.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700 text-[11px]">
+                        <div><span class="text-amber-400 font-bold">Mouvement :</span> ${card.mouvement}</div>
+                        <div><span class="text-amber-400 font-bold">Genre :</span> ${card.genre}</div>
                     </div>
-                    <p class="text-xs italic text-slate-400">${c.author} — ${c.work}</p>
-                </div>
-
-                <div class="text-xs space-y-1">
-                    <span class="font-bold text-slate-300 block uppercase tracking-wide text-[10px]">1. Introduction (Clé en main) :</span>
-                    <p class="text-slate-300 bg-slate-700/30 p-2 rounded italic">${c.intro}</p>
-                </div>
-
-                <div class="text-xs space-y-1">
-                    <span class="font-bold text-slate-300 block uppercase tracking-wide text-[10px]">2. Problématique :</span>
-                    <p class="text-white font-medium pl-2 border-l-2 border-amber-500">${c.problematique}</p>
-                </div>
-
-                <div class="text-xs space-y-2">
-                    <span class="font-bold text-slate-300 block uppercase tracking-wide text-[10px]">3. Analyse Linéaire (Texte ➔ Procédé ➔ Effet) :</span>
-                    <div class="space-y-2">${itemsLineaires}</div>
-                </div>
-
-                <div class="text-xs space-y-1">
-                    <span class="font-bold text-slate-300 block uppercase tracking-wide text-[10px]">4. Conclusion / Ouverture :</span>
-                    <p class="text-slate-300 bg-slate-900/60 p-2 rounded">${c.conclusion}</p>
+                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Situation dans l'œuvre</span>
+                        <p class="text-xs text-slate-300 leading-relaxed">${card.situation}</p>
+                    </div>
+                    <div class="bg-amber-500/10 p-3 rounded-xl border border-amber-500/20">
+                        <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-1">Problématique</span>
+                        <p class="text-xs font-bold text-amber-200 italic mb-2">« ${card.problematique} »</p>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block mb-0.5">Réponse synthétique</span>
+                        <p class="text-xs text-slate-300 leading-relaxed">${card.reponse_prob}</p>
+                    </div>
+                    <div class="space-y-2.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">Analyse linéaire stylistique (Sans paraphrase)</span>
+                        ${mvtHTML}
+                    </div>
+                    <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
+                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block mb-1">Ouverture</span>
+                        <p class="text-xs text-emerald-300/90 leading-relaxed">${card.ouverture}</p>
+                    </div>
                 </div>
             `;
-
-            document.getElementById('flashcard').classList.remove('flipped');
+            
+            document.getElementById('back-scroll-content').scrollTop = 0;
+            if (window.lucide) window.lucide.createIcons();
         }
 
-        function toggleFlip() {
-            document.getElementById('flashcard').classList.toggle('flipped');
-        }
+        function toggleFlip() { flashcardElement.classList.toggle('flipped'); }
+        function nextCard() { currentCardIndex = (currentCardIndex + 1) % cards.length; renderCard(); }
+        function prevCard() { currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length; renderCard(); }
 
-        function nextCard() {
-            current = (current + 1) % cards.length;
-            render();
-        }
-
-        function prevCard() {
-            current = (current - 1 + cards.length) % cards.length;
-            render();
-        }
-
-        // Clavier
-        document.addEventListener('keydown', function(event) {
-            if (event.key === "ArrowRight") {
-                nextCard();
-            } else if (event.key === "ArrowLeft") {
-                prevCard();
-            } else if (event.key === " ") {
-                event.preventDefault();
-                toggleFlip();
-            }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextCard();
+            else if (e.key === 'ArrowLeft') prevCard();
+            else if (e.key === ' ') { e.preventDefault(); toggleFlip(); }
         });
 
-        // Init
-        render();
-        lucide.createIcons();
+        window.addEventListener('DOMContentLoaded', renderCard);
   </script>
  </body>
 </html>
